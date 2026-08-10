@@ -1,0 +1,36 @@
+{
+  "name": "mediapipe-od-ts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev": "vite",
+    "predev": "node copy-wasm.js",
+    "build": "tsc && vite build",
+    "prebuild": "node copy-wasm.js",
+    "preview": "vite preview",
+    "test": "playwright test --project=chromium-gpu",
+    "format": "prettier --write \"src/**/*.{ts,html,css}\"",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-audio": "^1.0.1",
+    "@mediapipe/tasks-text": "^1.0.1",
+    "@mediapipe/tasks-vision": "^1.0.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.1.2",
+    "esbuild": "^0.28.1",
+    "eslint-plugin-html": "^8.1.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.0"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,html,css}": "prettier --write"
+  }
+}

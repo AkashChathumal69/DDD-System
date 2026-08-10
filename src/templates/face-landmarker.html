@@ -1,0 +1,153 @@
+<div class="task-container">
+  <div class="controls-panel">
+    <div class="section-title">Model Selection</div>
+    <div id="model-selector-container"></div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">Monitoring Thresholds</div>
+    <div class="control-group">
+      <div class="control-label">
+        <span>EAR threshold</span>
+        <span id="ear-threshold-value" class="value-badge">0.22</span>
+      </div>
+      <input type="range" id="ear-threshold" min="0.1" max="0.4" step="0.01" value="0.22" class="range-slider" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>MAR threshold</span>
+        <span id="mar-threshold-value" class="value-badge">0.2</span>
+      </div>
+      <input type="range" id="mar-threshold" min="0.05" max="0.4" step="0.01" value="0.2" class="range-slider" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Blink rate threshold</span>
+        <span id="blink-rate-threshold-value" class="value-badge">24</span>
+      </div>
+      <input type="range" id="blink-rate-threshold" min="10" max="40" step="1" value="24" class="range-slider" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Num Faces</span>
+        <span id="num-faces-value" class="value-badge">1</span>
+      </div>
+      <input type="range" id="num-faces" min="1" max="10" step="1" value="1" class="range-slider" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Min Detection Confidence</span>
+        <span id="min-face-detection-confidence-value" class="value-badge">0.5</span>
+      </div>
+      <input type="range" id="min-face-detection-confidence" min="0" max="1" step="0.01" value="0.5" class="range-slider" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Min Presence Confidence</span>
+        <span id="min-face-presence-confidence-value" class="value-badge">0.5</span>
+      </div>
+      <input type="range" id="min-face-presence-confidence" min="0" max="1" step="0.01" value="0.5" class="range-slider" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Min Tracking Confidence</span>
+        <span id="min-tracking-confidence-value" class="value-badge">0.5</span>
+      </div>
+      <input type="range" id="min-tracking-confidence" min="0" max="1" step="0.01" value="0.5" class="range-slider" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>Delegate</span>
+      </div>
+      <div class="select-wrapper">
+        <select id="delegate-select">
+          <option value="GPU" selected>GPU</option>
+          <option value="CPU">CPU</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="status-group">
+      <div id="status-message" class="status-message">Ready</div>
+      <div id="inference-time" class="inference-time">Inference Time: - ms</div>
+    </div>
+  </div>
+
+  <div class="output-panel">
+    <div class="output-header">
+      <div>
+        <h2>Real-Time Driver Drowsiness Monitor</h2>
+        <p class="subheading">EAR, MAR, and blink-rate monitoring for fatigue detection.</p>
+      </div>
+      <div id="view-mode-toggle"></div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-label">EAR</div>
+        <div id="ear-value" class="metric-value">0.00</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">MAR</div>
+        <div id="mar-value" class="metric-value">0.00</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Blink rate</div>
+        <div id="blink-rate-value" class="metric-value">0.0</div>
+      </div>
+      <div class="metric-card status-card">
+        <div class="metric-label">Alert state</div>
+        <div id="drowsiness-status" class="status-pill safe">Focused</div>
+        <div id="alert-message" class="alert-message">The driver appears alert. Continue monitoring.</div>
+      </div>
+    </div>
+
+    <div class="viewport">
+      <div id="view-webcam" class="view-content active">
+        <div class="cam-container">
+          <div class="video-wrapper">
+            <div class="webcam-placeholder" id="webcam-placeholder">
+              <span class="material-icons">videocam_off</span>
+              <p>Webcam Disabled</p>
+            </div>
+            <video id="webcam" autoplay playsinline muted></video>
+            <canvas id="output_canvas"></canvas>
+          </div>
+        </div>
+        <div id="webcam-controls-container" style="display: none; justify-content: center; width: 100%; margin-top: auto; padding-bottom: 20px">
+          <button id="webcamButton" class="action-button">
+            <span class="material-icons">videocam</span> Enable Webcam
+          </button>
+        </div>
+      </div>
+
+      <div id="view-image" class="view-content">
+        <div class="upload-dropzone">
+          <div class="dropzone-content" style="display: none">
+            <span class="material-icons large-icon">image</span>
+            <p>Upload a sample face image</p>
+            <input type="file" id="image-upload" accept="image/*" />
+          </div>
+          <div id="image-preview-container" class="preview-container">
+            <div class="canvas-wrapper">
+              <img id="test-image" src="face_model.png" crossorigin="anonymous" />
+              <canvas id="image-canvas"></canvas>
+            </div>
+          </div>
+          <button id="re-upload-btn" class="action-button re-upload" style="display: flex">
+            <span class="material-icons">upload</span> Upload New Image
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
