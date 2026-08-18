@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ModelSelector } from './model-selector';
+// ModelSelector removed — model selection and upload UI trimmed
 
 export interface BaseTaskOptions {
   container: HTMLElement;
@@ -31,7 +31,6 @@ export abstract class BaseTask {
 
   protected currentModel: string;
   protected models: Record<string, string> = {};
-  protected modelSelector!: ModelSelector;
   protected currentDelegate: 'CPU' | 'GPU' = 'GPU';
 
   protected isWorkerReady = false;
@@ -49,7 +48,7 @@ export abstract class BaseTask {
     this.container.innerHTML = this.options.template;
 
     this.initWorker();
-    this.setupUI();
+    // model selector UI removed
 
     // Child class hook
     this.onInitializeUI();
@@ -101,19 +100,12 @@ export abstract class BaseTask {
     }
   }
 
-  protected handleLoadProgress(data: any) {
-    const { progress, loaded, total } = data;
-    if (progress !== undefined) {
-      this.modelSelector?.showProgress(progress * 100, 100);
-      if (progress >= 1) setTimeout(() => this.modelSelector?.hideProgress(), 500);
-    } else if (loaded !== undefined && total !== undefined) {
-      this.modelSelector?.showProgress(loaded, total);
-      if (loaded >= total) setTimeout(() => this.modelSelector?.hideProgress(), 500);
-    }
+  protected handleLoadProgress(_data: any) {
+    // progress events are handled by worker; model UI removed
   }
 
   protected handleInitDone() {
-    this.modelSelector?.hideProgress();
+    // model selector progress hidden (component removed)
     document.querySelector('.viewport')?.classList.remove('loading-model');
     this.isWorkerReady = true;
     if (this.hadDelegateFallback) {
@@ -135,21 +127,7 @@ export abstract class BaseTask {
     }
   }
 
-  protected setupUI() {
-    this.modelSelector = new ModelSelector(
-      'model-selector-container',
-      [{ label: this.options.defaultModelName, value: this.options.defaultModelName, isDefault: true }],
-      async (selection) => {
-        if (selection.type === 'standard') {
-          this.currentModel = selection.value;
-        } else if (selection.type === 'custom') {
-          this.models['custom'] = URL.createObjectURL(selection.file);
-          this.currentModel = 'custom';
-        }
-        await this.initializeTask();
-      }
-    );
-  }
+  // model selection UI removed
 
   protected async initializeTask(): Promise<void> {
     document.querySelector('.viewport')?.classList.add('loading-model');

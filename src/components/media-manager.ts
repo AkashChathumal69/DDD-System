@@ -30,7 +30,7 @@ export class MediaManager {
   private video: HTMLVideoElement;
   private enableWebcamButton: HTMLButtonElement;
   private viewWebcam: HTMLElement;
-  private viewImage: HTMLElement;
+  private viewImage: HTMLElement | null;
   public isWorkerReady = false;
 
   private lastVideoTimeSeconds = -1;
@@ -45,7 +45,7 @@ export class MediaManager {
     this.video = document.getElementById('webcam') as HTMLVideoElement;
     this.enableWebcamButton = document.getElementById('webcamButton') as HTMLButtonElement;
     this.viewWebcam = document.getElementById('view-webcam')!;
-    this.viewImage = document.getElementById('view-image')!;
+    this.viewImage = document.getElementById('view-image');
 
     this.setupUI();
   }
@@ -57,7 +57,7 @@ export class MediaManager {
 
       if (mode === 'VIDEO') {
         this.viewWebcam.classList.add('active');
-        this.viewImage.classList.remove('active');
+        if (this.viewImage) this.viewImage.classList.remove('active');
         if (webcamControls) webcamControls.style.display = 'flex';
         this.runningMode = 'VIDEO';
 
@@ -70,7 +70,7 @@ export class MediaManager {
         }
       } else {
         this.viewWebcam.classList.remove('active');
-        this.viewImage.classList.add('active');
+        if (this.viewImage) this.viewImage.classList.add('active');
         if (webcamControls) webcamControls.style.display = 'none';
         this.runningMode = 'IMAGE';
 
@@ -104,56 +104,6 @@ export class MediaManager {
     switchView(initialMode);
 
     this.enableWebcamButton?.addEventListener('click', () => this.toggleCam());
-
-    // Setup image upload
-    const imageUpload = document.getElementById('image-upload') as HTMLInputElement;
-    const imagePreviewContainer = document.getElementById('image-preview-container');
-    const testImage = document.getElementById('test-image') as HTMLImageElement;
-    const dropzoneContent = document.querySelector('.dropzone-content') as HTMLElement;
-
-    if (testImage?.src && dropzoneContent) {
-      dropzoneContent.style.display = 'none';
-    }
-
-    if (dropzoneContent) dropzoneContent.addEventListener('click', () => imageUpload?.click());
-
-    setTimeout(() => {
-      const reUploadBtn = document.getElementById('re-upload-btn');
-      if (reUploadBtn) {
-        reUploadBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          imageUpload?.click();
-        });
-      }
-    }, 0);
-
-    imageUpload?.addEventListener('change', (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          if (testImage) testImage.src = e.target?.result as string;
-          if (imagePreviewContainer) imagePreviewContainer.style.display = '';
-          const dc = document.querySelector('.dropzone-content') as HTMLElement;
-          if (dc) dc.style.display = 'none';
-
-          if (testImage && this.options.onImageUpload) {
-            // Handle actual inference logic via callback
-            const triggerOnLoad = () => {
-              if (testImage.naturalWidth > 0 && this.options.onImageUpload) {
-                this.options.onImageUpload(testImage);
-              }
-            };
-            if (testImage.complete && testImage.naturalWidth > 0) {
-              triggerOnLoad();
-            } else {
-              testImage.onload = triggerOnLoad;
-            }
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    });
   }
 
   public getRunningMode() {

@@ -1,9 +1,6 @@
 <div class="task-container">
   <div class="controls-panel">
-    <div class="section-title">Model Selection</div>
-    <div id="model-selector-container"></div>
-
-    <div class="divider"></div>
+    <!-- <div class="divider"></div> -->
 
     <div class="section-title">Monitoring Thresholds</div>
     <div class="control-group">
@@ -43,7 +40,15 @@
         <span>Min Detection Confidence</span>
         <span id="min-face-detection-confidence-value" class="value-badge">0.5</span>
       </div>
-      <input type="range" id="min-face-detection-confidence" min="0" max="1" step="0.01" value="0.5" class="range-slider" />
+      <input
+        type="range"
+        id="min-face-detection-confidence"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.5"
+        class="range-slider"
+      />
     </div>
 
     <div class="control-group">
@@ -51,7 +56,15 @@
         <span>Min Presence Confidence</span>
         <span id="min-face-presence-confidence-value" class="value-badge">0.5</span>
       </div>
-      <input type="range" id="min-face-presence-confidence" min="0" max="1" step="0.01" value="0.5" class="range-slider" />
+      <input
+        type="range"
+        id="min-face-presence-confidence"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.5"
+        class="range-slider"
+      />
     </div>
 
     <div class="control-group">
@@ -123,28 +136,12 @@
             <canvas id="output_canvas"></canvas>
           </div>
         </div>
-        <div id="webcam-controls-container" style="display: none; justify-content: center; width: 100%; margin-top: auto; padding-bottom: 20px">
+        <div
+          id="webcam-controls-container"
+          style="display: none; justify-content: center; width: 100%; margin-top: auto; padding-bottom: 20px"
+        >
           <button id="webcamButton" class="action-button">
             <span class="material-icons">videocam</span> Enable Webcam
-          </button>
-        </div>
-      </div>
-
-      <div id="view-image" class="view-content">
-        <div class="upload-dropzone">
-          <div class="dropzone-content" style="display: none">
-            <span class="material-icons large-icon">image</span>
-            <p>Upload a sample face image</p>
-            <input type="file" id="image-upload" accept="image/*" />
-          </div>
-          <div id="image-preview-container" class="preview-container">
-            <div class="canvas-wrapper">
-              <img id="test-image" src="face_model.png" crossorigin="anonymous" />
-              <canvas id="image-canvas"></canvas>
-            </div>
-          </div>
-          <button id="re-upload-btn" class="action-button re-upload" style="display: flex">
-            <span class="material-icons">upload</span> Upload New Image
           </button>
         </div>
       </div>

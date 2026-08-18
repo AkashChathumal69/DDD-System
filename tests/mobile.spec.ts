@@ -90,6 +90,17 @@ test.describe('Mobile Layout & Navigation', () => {
     }
   });
 
+  test('should keep webcam off until the user enables it', async ({ page }) => {
+    await page.goto('/#/driver/drowsiness');
+
+    await expect(page.locator('#status-message')).toHaveText(/(Ready)|(Done)/, { timeout: 30000 });
+
+    const btn = page.locator('#webcamButton');
+    await expect(btn).toBeVisible();
+    await expect(btn).toHaveText('Enable Webcam');
+    await expect(page.locator('#webcam')).toHaveJSProperty('srcObject', null);
+  });
+
   test('should show enable webcam button nicely centered', async ({ page }) => {
     await page.goto('/#/vision/image_segmenter');
     
@@ -101,7 +112,6 @@ test.describe('Mobile Layout & Navigation', () => {
     
     const btn = page.locator('#webcamButton');
     await expect(btn).toBeVisible();
-    // Webcam auto-starts on tab switch in this app version
     await expect(btn).toHaveText(/(Enable Webcam)|(Disable Webcam)/);
 
     // Verify centering styles are applied

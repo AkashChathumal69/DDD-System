@@ -1,6 +1,6 @@
 :root {
-  --primary: #007f8b;
-  --primary-hover: #006069;
+  --primary: #00158b;
+  --primary-hover: #002169;
   --bg-color: #f8f9fa;
   --surface: #ffffff;
   --text-main: #202124;
@@ -121,13 +121,13 @@ body {
 }
 
 .nav-button:hover {
-  background: rgba(0, 127, 139, 0.08);
+  background: rgba(0, 21, 139, 0.08);
   color: var(--primary);
   padding-left: 20px;
 }
 
 .nav-button.active {
-  background: rgba(0, 127, 139, 0.12);
+  background: rgba(0, 21, 139, 0.12);
   color: var(--primary);
   font-weight: 600;
   border-left: 3px solid var(--primary);

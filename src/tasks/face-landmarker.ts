@@ -1,19 +1,3 @@
-/**
- * Copyright 2026 The MediaPipe Authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { FaceLandmarkerResult, DrawingUtils, FaceLandmarker } from '@mediapipe/tasks-vision';
 import { BaseVisionTask } from '../components/base-vision-task';
 
@@ -94,10 +78,6 @@ class FaceLandmarkerTask extends BaseVisionTask {
       face_landmarker:
         'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
     };
-
-    if (this.modelSelector) {
-      this.modelSelector.updateOptions([{ label: 'Face Landmarker', value: 'face_landmarker', isDefault: true }]);
-    }
 
     this.renderStatusSummary();
   }
@@ -210,7 +190,9 @@ class FaceLandmarkerTask extends BaseVisionTask {
 
   private extractIndices(connections: Array<{ start: number; end: number }> | any): number[] {
     if (Array.isArray(connections)) {
-      return connections.map((item) => (typeof item === 'number' ? item : item.start)).filter((value) => typeof value === 'number');
+      return connections
+        .map((item) => (typeof item === 'number' ? item : item.start))
+        .filter((value) => typeof value === 'number');
     }
     return [];
   }
@@ -267,7 +249,10 @@ class FaceLandmarkerTask extends BaseVisionTask {
     const statusEl = document.getElementById('drowsiness-status');
     const messageEl = document.getElementById('alert-message');
 
-    const isDrowsy = this.latestEar < this.earThreshold || this.latestMar > this.marThreshold || this.latestBlinkRate > this.blinkRateThreshold;
+    const isDrowsy =
+      this.latestEar < this.earThreshold ||
+      this.latestMar > this.marThreshold ||
+      this.latestBlinkRate > this.blinkRateThreshold;
     const statusText = isDrowsy ? 'Warning' : 'Focused';
     const messageText = isDrowsy
       ? 'Eye closure and mouth activity suggest fatigue. Consider a short break or alert.'

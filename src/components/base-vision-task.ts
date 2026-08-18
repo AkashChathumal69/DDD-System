@@ -41,9 +41,7 @@ export abstract class BaseVisionTask extends BaseTask {
     this.enableWebcamButton = document.getElementById('webcamButton') as HTMLButtonElement;
 
     this.initWorker();
-    this.setupUI();
     this.setupViewToggle();
-    this.setupImageUpload();
 
     // Child class hook
     this.onInitializeUI();
@@ -158,49 +156,14 @@ export abstract class BaseVisionTask extends BaseTask {
 
     viewToggle.setActive(initialMode.toLowerCase());
 
+    // Show the webcam view but keep the camera disabled until the user clicks the control.
     switchView(initialMode);
     if (this.enableWebcamButton) {
       this.enableWebcamButton.addEventListener('click', this.toggleCam.bind(this));
     }
   }
 
-  protected setupImageUpload() {
-    const imageUpload = document.getElementById('image-upload') as HTMLInputElement;
-    const imagePreviewContainer = document.getElementById('image-preview-container')!;
-    const testImage = document.getElementById('test-image') as HTMLImageElement;
-    const dropzone = document.querySelector('.upload-dropzone') as HTMLElement;
-    const dropzoneContent = document.querySelector('.dropzone-content') as HTMLElement;
-
-    if (testImage && testImage.src && dropzoneContent) {
-      dropzoneContent.style.display = 'none';
-    }
-
-    if (dropzone) {
-      dropzone.addEventListener('click', (e) => {
-        const previewContainer = dropzone.querySelector('.preview-container');
-        if (previewContainer && previewContainer.contains(e.target as Node)) {
-          return;
-        }
-        imageUpload?.click();
-      });
-    }
-
-    imageUpload?.addEventListener('change', (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          if (testImage) testImage.src = e.target?.result as string;
-          if (imagePreviewContainer) imagePreviewContainer.style.display = '';
-          const dc = document.querySelector('.dropzone-content') as HTMLElement;
-          if (dc) dc.style.display = 'none';
-
-          if (testImage) this.triggerImageDetection(testImage);
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
+  // image upload UI removed
 
   protected override async initializeTask() {
     if (this.enableWebcamButton) {
