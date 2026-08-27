@@ -1,23 +1,5 @@
-/**
- * Copyright 2026 The MediaPipe Authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { ViewToggle } from './view-toggle';
-import { BaseTask, BaseTaskOptions } from './base-task';
-
-export interface BaseVisionTaskOptions extends BaseTaskOptions {}
+import { BaseTask } from './base-task';
 
 export abstract class BaseVisionTask extends BaseTask {
   protected runningMode: 'IMAGE' | 'VIDEO' = 'IMAGE';
@@ -29,6 +11,7 @@ export abstract class BaseVisionTask extends BaseTask {
   protected lastVideoTimeSeconds = -1;
   protected lastTimestampMs = -1;
   protected animationFrameId: number | undefined;
+  private webcamStartPromise: Promise<void> | null = null;
 
   public override async initialize() {
     this.container.innerHTML = this.options.template;
@@ -42,6 +25,7 @@ export abstract class BaseVisionTask extends BaseTask {
 
     this.initWorker();
     this.setupViewToggle();
+    this.enableCam();
 
     // Child class hook
     this.onInitializeUI();
@@ -85,10 +69,8 @@ export abstract class BaseVisionTask extends BaseTask {
       this.enableWebcamButton.disabled = false;
     }
 
-    if (this.runningMode === 'VIDEO') {
-      if (this.video.srcObject) {
-        this.enableCam();
-      }
+    if (this.runningMode === 'VIDEO' && !this.video.srcObject) {
+      this.enableCam();
     } else if (this.runningMode === 'IMAGE') {
       const testImage = document.getElementById('test-image') as HTMLImageElement;
       if (testImage && testImage.style.display !== 'none' && testImage.src) {
@@ -119,18 +101,13 @@ export abstract class BaseVisionTask extends BaseTask {
         if (webcamControls) webcamControls.style.display = 'flex';
         this.runningMode = 'VIDEO';
         this.worker?.postMessage({ type: 'SET_OPTIONS', runningMode: 'VIDEO' });
-
-        const isWebcamActive = localStorage.getItem('mediapipe-webcam-active') === 'true';
-        if (isWebcamActive) {
-          this.enableCam();
-        }
       } else {
         viewWebcam.classList.remove('active');
         viewImage.classList.add('active');
         if (webcamControls) webcamControls.style.display = 'none';
         this.runningMode = 'IMAGE';
         this.worker?.postMessage({ type: 'SET_OPTIONS', runningMode: 'IMAGE' });
-        this.stopCam(false);
+        this.stopCam();
 
         if (this.isWorkerReady) {
           const testImage = document.getElementById('test-image') as HTMLImageElement;
@@ -139,8 +116,7 @@ export abstract class BaseVisionTask extends BaseTask {
       }
     };
 
-    const storedMode = localStorage.getItem('mediapipe-running-mode') as 'VIDEO' | 'IMAGE';
-    const initialMode = storedMode || 'VIDEO';
+    const initialMode = 'VIDEO';
 
     const viewToggle = new ViewToggle(
       'view-mode-toggle',
@@ -156,14 +132,11 @@ export abstract class BaseVisionTask extends BaseTask {
 
     viewToggle.setActive(initialMode.toLowerCase());
 
-    // Show the webcam view but keep the camera disabled until the user clicks the control.
     switchView(initialMode);
     if (this.enableWebcamButton) {
       this.enableWebcamButton.addEventListener('click', this.toggleCam.bind(this));
     }
   }
-
-  // image upload UI removed
 
   protected override async initializeTask() {
     if (this.enableWebcamButton) {
@@ -213,15 +186,19 @@ export abstract class BaseVisionTask extends BaseTask {
   protected async enableCam() {
     if (!this.worker || !this.video) return;
     if (this.video.srcObject) return;
+    if (this.webcamStartPromise) return this.webcamStartPromise;
 
     if (this.enableWebcamButton) {
       this.enableWebcamButton.innerText = 'Starting...';
       this.enableWebcamButton.disabled = true;
     }
-    const constraints = { video: true };
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    this.webcamStartPromise = (async () => {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error('Camera access is unavailable. Open the app on localhost or HTTPS.');
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
 
       if (!this.worker || !this.video) {
         stream.getTracks().forEach((track) => track.stop());
@@ -245,32 +222,42 @@ export abstract class BaseVisionTask extends BaseTask {
       }
 
       this.runningMode = 'VIDEO';
-      localStorage.setItem('mediapipe-webcam-active', 'true');
       this.worker.postMessage({ type: 'SET_OPTIONS', runningMode: 'VIDEO' });
       this.updateStatus('Webcam running...');
       if (this.enableWebcamButton) {
         this.enableWebcamButton.innerText = 'Disable Webcam';
         this.enableWebcamButton.disabled = false;
       }
-    } catch (err) {
+    })().catch((err) => {
       console.error(err);
-      this.updateStatus('Camera error!');
+      const message = err instanceof DOMException && err.name === 'NotAllowedError'
+        ? 'Camera permission denied. Allow camera access and try again.'
+        : err instanceof DOMException && err.name === 'NotFoundError'
+          ? 'No camera found.'
+          : err instanceof DOMException && err.name === 'NotReadableError'
+            ? 'Camera is already in use by another app or browser tab.'
+          : 'Camera unavailable. Check browser permissions.';
+      this.updateStatus(message);
       if (this.enableWebcamButton) {
         this.enableWebcamButton.innerText = 'Enable Webcam';
         this.enableWebcamButton.disabled = false;
       }
-    }
+    }).finally(() => {
+      this.webcamStartPromise = null;
+    });
+
+    return this.webcamStartPromise;
   }
 
   protected toggleCam() {
     if (this.video && this.video.srcObject) {
-      this.stopCam(true);
+      this.stopCam();
     } else {
       this.enableCam();
     }
   }
 
-  protected stopCam(persistState = true) {
+  protected stopCam() {
     if (this.video && this.video.srcObject) {
       const stream = this.video.srcObject as MediaStream;
       const tracks = stream.getTracks();
@@ -285,9 +272,6 @@ export abstract class BaseVisionTask extends BaseTask {
         this.canvasCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
       }
 
-      if (persistState) {
-        localStorage.setItem('mediapipe-webcam-active', 'false');
-      }
     }
   }
 
@@ -340,7 +324,7 @@ export abstract class BaseVisionTask extends BaseTask {
 
   public override cleanup() {
     if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
-    this.stopCam(false);
+    this.stopCam();
 
     if (this.canvasCtx && this.canvasElement) {
       this.canvasCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);

@@ -2,9 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const srcDirs = [
-  'node_modules/@mediapipe/tasks-audio/wasm',
   'node_modules/@mediapipe/tasks-vision/wasm',
-  'node_modules/@mediapipe/tasks-text/wasm',
 ];
 
 const destDir = 'public/wasm';

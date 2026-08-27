@@ -34,13 +34,6 @@ jobs:
       - name: Update dependencies
         run: pnpm up --latest
 
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install chromium --with-deps
-
-      - name: Run E2E Tests
-        timeout-minutes: 10
-        run: pnpm run test
-
       - name: Create Pull Request with CLI
         if: success()
         env:

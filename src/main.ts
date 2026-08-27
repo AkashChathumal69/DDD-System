@@ -79,14 +79,6 @@ async function router() {
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
-// Keep webcam off by default until the user explicitly enables it.
-try {
-  localStorage.setItem('mediapipe-webcam-active', 'false');
-} catch (e) {
-  // ignore storage failures
-}
-
-// Ensure light theme (default CSS variables). Do not apply dark theme.
 router();
 
 (window as any).cleanupActiveTask = () => {

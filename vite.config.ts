@@ -5,11 +5,7 @@ export default defineConfig({
 
   plugins: [],
   optimizeDeps: {
-    exclude: [
-      '@mediapipe/tasks-vision',
-      '@mediapipe/tasks-audio',
-      '@mediapipe/tasks-text'
-    ]
+    exclude: ['@mediapipe/tasks-vision'],
   },
   worker: {
     format: 'es'
