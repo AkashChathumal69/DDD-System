@@ -1,5 +1,4 @@
 from pathlib import Path
-
 import joblib
 import pandas as pd
 from flask import Flask, jsonify, request
@@ -8,7 +7,6 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-
 MODEL_PATH = Path(__file__).resolve().with_name(
     "drowsiness_random_forest.pkl"
 )

@@ -1,29 +1,14 @@
 import {
-
   FaceLandmarkerResult,
-
   DrawingUtils,
-
   FaceLandmarker,
-
 } from '@mediapipe/tasks-vision';
-
-
-
 import { BaseVisionTask } from '../components/base-vision-task';
-
-
-
-// @ts-ignore
-
 import template from '../frontend/face-landmarker.html?raw';
 
 
 
 type DriverState = 'ALERT' | 'DROWSY' | 'SLEEPING';
-
-
-
 type PerclosSample = {
 
   time: number;
@@ -39,37 +24,20 @@ class FaceLandmarkerTask extends BaseVisionTask {
   private drawingUtils: DrawingUtils | undefined;
 
 
-
   private numFaces = 1;
-
   private minFaceDetectionConfidence = 0.5;
-
   private minFacePresenceConfidence = 0.5;
-
   private minTrackingConfidence = 0.5;
 
 
 
-  /*
-
-   * Prototype/calibration thresholds.
-
-   * These values are configurable starting points, not universal constants.
-
-   */
 
   private earThreshold = 0.20;
-
   private marThreshold = 0.30;
 
-
-
   private readonly drowsyClosureSeconds = 1.5;
-
   private readonly sleepingClosureSeconds = 3.0;
-
   private readonly mlAssistMinClosureSeconds = 0.6;
-
   private readonly mlDrowsyProbabilityThreshold = 0.65;
 
 
@@ -77,11 +45,8 @@ class FaceLandmarkerTask extends BaseVisionTask {
   // PERCLOS
 
   private readonly perclosWindowMs = 30_000;
-
   private readonly perclosMinimumObservationMs = 10_000;
-
   private readonly perclosDrowsyThreshold = 40;
-
   private readonly perclosSupportThreshold = 30;
 
 
@@ -1789,7 +1754,7 @@ class FaceLandmarkerTask extends BaseVisionTask {
 
       if (confidenceValue) {
 
-        confidenceValue.innerText = 'Ã¢â‚¬â€';
+        confidenceValue.innerText = '--';
 
       }
 
@@ -2085,35 +2050,6 @@ class FaceLandmarkerTask extends BaseVisionTask {
 
   }
 
-
-
-  /*
-
-   * Enhanced decision model:
-
-   *
-
-   * Primary evidence:
-
-   *   EAR closure duration, PERCLOS
-
-   *
-
-   * Learned evidence:
-
-   *   Random Forest prediction (EAR features only)
-
-   *
-
-   * Supporting behavioral indicators:
-
-   *   MAR/yawn behavior + blink rate
-
-   *
-
-   * MAR and blink rate NEVER force DROWSY by themselves.
-
-   */
 
   private determineDriverState(): DriverState {
 
