@@ -95,6 +95,15 @@ export abstract class BaseTask {
       case 'DETECT_ERROR':
       case 'CLASSIFY_ERROR':
         console.error('Worker error:', event.data.error);
+        document.querySelector('.viewport')?.classList.remove('loading-model');
+        this.isWorkerReady = false;
+        if (this.hadDelegateFallback) {
+          const fallbackWarning = document.getElementById('fallback-warning');
+          if (fallbackWarning) {
+            fallbackWarning.innerText = `⚠️ CPU fallback also failed: ${event.data.error}`;
+          }
+          this.hadDelegateFallback = false;
+        }
         this.updateStatus(`Error: ${event.data.error}`);
         break;
     }

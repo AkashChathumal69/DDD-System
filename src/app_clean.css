@@ -6,7 +6,6 @@
   --text-main: #202124;
   --text-secondary: #5f6368;
   --border-color: #e0e0e0;
-  --sidebar-width: 260px;
   --controls-width: 320px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -53,19 +52,6 @@ body {
   width: 100%;
 }
 
-.sidebar {
-  width: var(--sidebar-width);
-  background: var(--surface);
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  z-index: 10;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-  overflow-y: auto;
-  min-height: 0;
-}
-
 .controls-panel {
   width: var(--controls-width);
   background: var(--surface);
@@ -78,70 +64,9 @@ body {
   min-height: 0;
 }
 
-.sidebar-header {
-  height: var(--header-height);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.sidebar-logo-text {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.sidebar-nav ul {
-  list-style: none;
-  padding: 12px 16px;
-  margin: 0;
-}
-
-.nav-button {
-  width: 100%;
-  text-align: left;
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.nav-button:hover {
-  background: rgba(0, 21, 139, 0.08);
-  color: var(--primary);
-  padding-left: 20px;
-}
-
-.nav-button.active {
-  background: rgba(0, 21, 139, 0.12);
-  color: var(--primary);
-  font-weight: 600;
-  border-left: 3px solid var(--primary);
-  padding-left: 13px;
-}
-
-.category-header {
-  padding: 16px 24px 8px;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-top: 8px;
+/* Hide the left-side monitoring controls column while keeping its markup available. */
+.task-container > .controls-panel {
+  display: none;
 }
 
 .main-content {
@@ -786,14 +711,6 @@ video {
   font-feature-settings: 'liga';
 }
 
-.mobile-header {
-  display: none;
-}
-
-.menu-toggle {
-  display: none;
-}
-
 .re-upload {
   position: relative;
   margin-top: 15px;
@@ -847,9 +764,6 @@ video {
     flex-direction: column;
   }
 
-  .sidebar {
-    display: none !important;
-  }
   .controls-panel {
     width: 100%;
     height: auto;
@@ -867,40 +781,9 @@ video {
     overflow-y: auto;
   }
 
-  .sidebar.open {
-    display: flex !important;
-    position: fixed;
-    height: 100%;
-    z-index: 1000;
-  }
-
-  .mobile-header {
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
-    background-color: var(--surface);
-    border-bottom: 1px solid var(--border-color);
-    height: var(--header-height);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .mobile-task-select {
-    padding: 8px 12px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    font-size: 16px;
-    background-color: white;
-    flex-grow: 1;
-    margin-left: 10px;
-    max-width: 250px;
-  }
-
   .main-content {
     height: auto;
-    min-height: calc(100vh - var(--header-height));
+    min-height: 100vh;
     padding: 16px;
     overflow-y: auto;
   }
@@ -918,13 +801,12 @@ video {
     flex-shrink: 0;
   }
 
-  .output-panel {
-    height: 60vh;
+  .task-container > .controls-panel {
+    display: none;
   }
 
-  .sidebar-header .menu-toggle,
-  .mobile-header .menu-toggle {
-    display: block;
+  .output-panel {
+    height: 60vh;
   }
 
   .preview-container {

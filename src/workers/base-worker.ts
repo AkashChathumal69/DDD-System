@@ -1,19 +1,3 @@
-/**
- * Copyright 2026 The MediaPipe Authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- *limitations under the License.
- */
-
 import { FilesetResolver } from '@mediapipe/tasks-vision';
 
 export abstract class BaseWorker<T> {
@@ -93,7 +77,7 @@ export abstract class BaseWorker<T> {
       }
       await this.initializeTask(data);
     } catch (error: any) {
-      if (this.currentOptions.delegate === 'GPU') {
+      if (this.currentOptions.delegate === 'GPU' && !this.isModelAssetError(error)) {
         const diagnostics = this.diagnoseWebGLFailure();
         console.warn('Worker GPU delegate initialization failed, falling back to CPU:', error, diagnostics);
         this.currentOptions.delegate = 'CPU';
@@ -111,6 +95,10 @@ export abstract class BaseWorker<T> {
     } finally {
       this.isInitializing = false;
     }
+  }
+
+  private isModelAssetError(error: any): boolean {
+    return Boolean(error?.isModelAssetError);
   }
 
   private diagnoseWebGLFailure(): { reason: string; advice: string } {
@@ -167,7 +155,9 @@ export abstract class BaseWorker<T> {
   protected async loadModelAsset(): Promise<ArrayBuffer> {
     const response = await fetch(this.currentOptions.modelAssetPath);
     if (!response.ok) {
-      throw new Error(`Failed to load model: ${response.statusText}`);
+      const error = new Error(`Failed to load model (${response.status}): ${response.statusText}`);
+      (error as Error & { isModelAssetError: boolean }).isModelAssetError = true;
+      throw error;
     }
 
     const contentLength = response.headers.get('content-length');
